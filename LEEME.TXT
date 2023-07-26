@@ -1,0 +1,19 @@
+# Retos_programacion
+NOTAS IMPORTANTES
+-----------------
+
+
+Este repositorio con nombre de carpeta Retos_programacion contiene subcarpetas correspondientes a los distintos retos de programación 
+propuestos en la web "https://retosdeprogramacion.com/" que vaya resolviendo.
+
+Cada carpeta está nombrada con el formato Reto_numero, por ejemplo reto_1 se corresponderia con el reto número 1. 
+
+Empezaré resolviendo los retos que pueda a partir del número 30 que es el que actualmente está en vigor a fecha de hoy (26-07-23), aunque no descarto
+ir completando retos pasados según la disponibilidad de tiempo para ello. Nótese que estos retos los realizo a modo de hobby o pasatiempo.
+
+Los retos en principio serán resueltos en lenguaje Pascal usando el compilador libre "codethyphoon", aunque no descarto en el futuro incluir nuevos lenguajes como
+Fortran, C, etc...
+
+José Antonio Alcázar
+
+ÚLTIMA ACTUALIZACIÓN DE ESTE ARCHIVO: 26-6-23.
