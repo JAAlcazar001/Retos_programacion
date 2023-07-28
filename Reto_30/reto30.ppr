@@ -1,0 +1,438 @@
+PROGRAM reto30;
+{$H+}
+(* TITULO: Reto_30.
+
+   FECHA:26-07-2023.
+
+   AUTOR: José Antonio Alcázar.
+
+   LENGUAJE: Pascal (IDE Typhon).
+
+   DESCRIPCIÓN: Programa que emula el funcionamiento de un teclato T9. El usuario introducirá
+   como entrada una cadena de caracteres numéricos separados por el caracter "-", el número de
+   veces que se repita un número equivaldrá al número de pulsaciones dadas a dicha tecla en un
+   teclado T9 real.
+   El programa como salida dará una cadena de caracteres equivalente a lo que
+   se hubiera tecleado en un T9. Este programa filtra que las entradas tengan el formato adecuado.*)
+
+USES
+
+  Crt,SysUtils;
+
+VAR
+
+  Entrada:String;
+  Estado:UInt8;
+
+LABEL
+  Inicio;
+
+FUNCTION tabla (tecla:Char;Pulsaciones:QWord):Char;
+
+(*Funcion que calcula el caracter de salida tras una serie de pulsaciones a una tecla*)
+
+VAR
+
+  Numero:Byte;
+
+
+
+BEGIN
+
+  Numero:=StrToInt(tecla);
+
+  CASE Numero OF
+
+  0: Tabla:=' ';
+
+  1:
+    BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:=',';
+      2: Tabla:='.';
+      3: Tabla:='?';
+      4: Tabla:='!';
+      END;
+    END;
+
+  2:
+     BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:='A';
+      2: Tabla:='B';
+      3: Tabla:='C';
+      END;
+    END;
+
+  3:
+      BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:='D';
+      2: Tabla:='E';
+      3: Tabla:='F';
+      END;
+    END;
+  4:
+      BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:='G';
+      2: Tabla:='H';
+      3: Tabla:='I';
+      END;
+    END;
+
+  5:
+      BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:='J';
+      2: Tabla:='K';
+      3: Tabla:='L';
+      END;
+    END;
+
+  6:
+      BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:='M';
+      2: Tabla:='N';
+      3: Tabla:='O';
+      END;
+    END;
+
+  7:
+      BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:='P';
+      2: Tabla:='Q';
+      3: Tabla:='R';
+      4: Tabla:='S';
+      END;
+    END;
+
+  8:
+      BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:='T';
+      2: Tabla:='U';
+      3: Tabla:='V';
+      END;
+    END;
+
+  9:
+      BEGIN
+      CASE Pulsaciones OF
+      1: Tabla:='W';
+      2: Tabla:='X';
+      3: Tabla:='Y';
+      4: Tabla:='Z';
+      END;
+    END;
+
+  END;
+
+
+END;
+
+FUNCTION Conversor(Cadena:String):UInt8;
+
+(*Función que hace la conversion de la secuencia introducida por el usuario a la cadena de texto real, si la
+cadena introducida es correcta. Los codigos de salida son los siguientes:
+0->Cadena correcta.
+1->Cadena incorrecta por empezar por el caracter "-".
+2->La cadena contiene 2 caracteres "-" seguidos.
+3->La cadena contiene caracteres no permitidos, todos los que no son numeros o "-".
+4->Los numeros de cada bloque deben de ser iguales.*)
+
+VAR
+
+  i,j:QWord;
+  Cadena_auxiliar:String;
+  Cadena_resultado:String;
+
+BEGIN
+  (*Inicializacion de variables*)
+
+  Cadena_auxiliar:='';
+  Cadena_resultado:='';
+
+
+  FOR i:=1 TO Length(Cadena) DO
+  BEGIN
+
+    (*Comprobar que ningun caracter sea un caracter prohibido*)
+
+    IF ((Cadena[i]='0') OR (Cadena[i]='1') OR (Cadena[i]='2') OR (Cadena[i]='3') OR (Cadena[i]='4') OR (Cadena[i]='5') OR (Cadena[i]='6') OR (Cadena[i]='7') OR (Cadena[i]='8') OR (Cadena[i]='9') OR (Cadena[i]='-')) THEN
+    BEGIN
+
+      (*El caracter es un caracter permitido*)
+
+      IF ((i=1) AND (Cadena[i]='-')) THEN
+      BEGIN
+
+        (*El primer miembro de la cadena empieza por "-", se asigna salida y se sale del bucle*)
+
+        Conversor:=1;
+        BREAK;
+
+      END;
+
+      IF ((i>1) AND (Cadena[i-1]='-') AND (Cadena[i]='-')) THEN
+      BEGIN
+
+        (*No puede haber dos caracteres "-" seguidos, se asigna salida y se sale del bucle*)
+        Conversor:=2;
+        BREAK;
+
+      END;
+
+      Cadena_auxiliar:=Cadena_auxiliar+Cadena[i];
+
+      IF Cadena[i]='-' THEN
+      BEGIN
+
+        (*Se ha llagado al caracter "-" bloque terminado, verificar que todos los numeros sean iguales*)
+
+        FOR j:=1 TO Length(Cadena_auxiliar)-2 DO
+        BEGIN
+
+          IF Cadena_auxiliar[j]<>Cadena_auxiliar[j+1] THEN
+          BEGIN
+
+            (*Los miembros del bloque no son iguales, se asigna salida y se sale del bucle*)
+            Conversor:=4;
+            BREAK;
+
+          END;
+
+        END;
+
+        (*El bloque es correcto, se procede a su conversion y almacenamiento en la cadena de salida*)
+
+        Cadena_resultado:=Cadena_resultado+tabla(Cadena_auxiliar[1],Length(Cadena_auxiliar)-1);
+
+        (*Se reinicia cadena auxiliar para nuevo bloque*)
+
+        Cadena_auxiliar:='';
+
+      END;
+
+      IF i=Length(Cadena) THEN
+            BEGIN
+
+              (*Se ha llagado al final de la cadena bloque terminado, verificar que todos los numeros sean iguales*)
+
+              FOR j:=1 TO Length(Cadena_auxiliar)-1 DO
+              BEGIN
+
+                IF Cadena_auxiliar[j]<>Cadena_auxiliar[j+1] THEN
+                BEGIN
+
+                  (*Los miembros del bloque no son iguales, se asigna salida y se sale del bucle*)
+                  Conversor:=4;
+                  BREAK;
+
+                END;
+
+              END;
+
+              (*El bloque es correcto, se procede a su conversion y almacenamiento en la cadena de salida*)
+
+              Cadena_resultado:=Cadena_resultado+tabla(Cadena_auxiliar[1],Length(Cadena_auxiliar));
+
+              (*Se reinicia cadena auxiliar para nuevo bloque*)
+
+              Cadena_auxiliar:='';
+
+            END;
+      (*Todas las verificaciones han sido correctas, se muestra en pantalla el resultado*)
+    END
+
+    ELSE
+    BEGIN
+
+      (*Caracteres prohibidos, se asigna salida y se sale del bucle*)
+      Conversor:=3;
+      BREAK;
+    END;
+
+  END;
+    WriteLn();
+    WriteLn('El texto convertido es:');
+    WriteLn(Cadena_resultado);
+END;
+
+FUNCTION menu_1:UInt8;
+VAR
+  opcion:Char;
+LABEL
+  Inicio;
+BEGIN
+  Inicio:
+
+  WriteLn();
+  WriteLn();
+  WriteLn('EJECUCION COMPLETADA:');
+  WriteLn();
+  WriteLn('0-Salir del programa.');
+  WriteLn('1->Ejecutar otra vez.');
+  WriteLn();
+  WriteLn('Elija una opcion:');
+  WriteLn();
+  ReadLn(opcion);
+
+  IF (opcion<>'0') AND (opcion<>'1') THEN GOTO Inicio
+  ELSE
+    menu_1:=StrToInt(opcion);
+END;
+
+FUNCTION menu_2:UInt8;
+VAR
+  opcion:Char;
+LABEL
+  Inicio;
+BEGIN
+  Inicio:
+
+  WriteLn();
+  WriteLn();
+  WriteLn('ERROR!!!!! EL DATO INTRODUCIDO NO PUEDE COMENZAR POR EL CARACTER "-".');
+  WriteLn();
+  WriteLn('0-Salir del programa.');
+  WriteLn('1->Ejecutar otra vez.');
+  WriteLn();
+  WriteLn('Elija una opcion:');
+  WriteLn();
+  ReadLn(opcion);
+
+  IF (opcion<>'0') AND (opcion<>'1') THEN GOTO Inicio
+  ELSE
+    menu_2:=StrToInt(opcion);
+END;
+
+FUNCTION menu_3:UInt8;
+VAR
+  opcion:Char;
+LABEL
+  Inicio;
+BEGIN
+  Inicio:
+
+  WriteLn();
+  WriteLn();
+  WriteLn('ERROR!!!!! LOS DATOS INTRODUCIDOS NO PUEDEN TENER DOS VECES SEGUIDAS EL CARACTER "-"');
+  WriteLn();
+  WriteLn('0-Salir del programa.');
+  WriteLn('1->Ejecutar otra vez.');
+  WriteLn();
+  WriteLn('Elija una opcion:');
+  WriteLn();
+  ReadLn(opcion);
+
+  IF (opcion<>'0') AND (opcion<>'1') THEN GOTO Inicio
+  ELSE
+    menu_3:=StrToInt(opcion);
+END;
+
+FUNCTION menu_4:UInt8;
+VAR
+  opcion:Char;
+LABEL
+  Inicio;
+BEGIN
+  Inicio:
+
+  WriteLn();
+  WriteLn();
+  WriteLn('ERROR!!!!! LOS DATOS INTRODUCIDOS TIENEN CARACTERES PROHIBIDOS. SOLO SE PERMITEN LOS NUMEROS Y EL CARACTER "-".');
+  WriteLn();
+  WriteLn('0-Salir del programa.');
+  WriteLn('1->Ejecutar otra vez.');
+  WriteLn();
+  WriteLn('Elija una opcion:');
+  WriteLn();
+  ReadLn(opcion);
+
+  IF (opcion<>'0') AND (opcion<>'1') THEN GOTO Inicio
+  ELSE
+    menu_4:=StrToInt(opcion);
+END;
+
+FUNCTION menu_5:UInt8;
+VAR
+  opcion:Char;
+LABEL
+  Inicio;
+BEGIN
+  Inicio:
+
+  WriteLn();
+  WriteLn();
+  WriteLn('ERROR!!!!! LOS DATOS INTRODUCIDOS TIENEN FORMATO INCORRECTO. NO PUEDE HABER NUMEROS DISTINTOS EN LOS BLOQUES.');
+  WriteLn();
+  WriteLn('0-Salir del programa.');
+  WriteLn('1->Ejecutar otra vez.');
+  WriteLn();
+  WriteLn('Elija una opcion:');
+  WriteLn();
+  ReadLn(opcion);
+
+  IF (opcion<>'0') AND (opcion<>'1') THEN GOTO Inicio
+  ELSE
+    menu_5:=StrToInt(opcion);
+END;
+
+BEGIN
+  Inicio:
+
+  ClrScr;
+  WriteLn('EMULADOR TECLADO T-9, SOLUCION AL RETO DE PROGRAMACION 30');
+  WriteLn('---------------------------------------------------------');
+  WriteLn();
+  WriteLn();
+  WriteLn('Introduzca una secuencia para convertir:');
+  WriteLn();
+  ReadLn(Entrada);
+  WriteLn();
+  Estado:=Conversor(Entrada);
+  WriteLn();
+  CASE estado OF
+  0:
+      BEGIN
+        CASE menu_1 OF
+        0:;
+        1:GOTO inicio;
+        END;
+      END;
+  1:
+      BEGIN
+        CASE menu_2 OF
+        0:;
+        1:GOTO inicio;
+        END;
+      END;
+  2:
+      BEGIN
+        CASE menu_3 OF
+        0:;
+        1:GOTO inicio;
+        END;
+      END;
+  3:
+      BEGIN
+        CASE menu_4 OF
+        0:;
+        1:GOTO inicio;
+        END;
+      END;
+  5:
+      BEGIN
+        CASE menu_5 OF
+        0:;
+        1:GOTO inicio;
+        END;
+      END;
+
+  END;
+
+
+END.
